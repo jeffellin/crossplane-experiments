@@ -1,0 +1,55 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xmydatastore.ellin.net
+spec:
+  compositeTypeRef:
+    apiVersion: ellin.net/v1alpha1
+    kind: XMyDataStore
+  resources:
+    - name: rds-store
+      base:
+        apiVersion: rds.aws.upbound.io/v1beta1
+        kind: Instance
+        spec:
+           forProvider:
+              allocatedStorage: 20
+              autoGeneratePassword: true
+              autoMinorVersionUpgrade: true
+              backupRetentionPeriod: 14
+              backupWindow: 09:46-10:16
+              engine: postgres
+              engineVersion: "13.7"
+              instanceClass: db.t3.micro
+              maintenanceWindow: Mon:00:00-Mon:03:00
+              name: example
+              passwordSecretRef:
+                key: password
+                name: example-dbinstance
+                namespace: upbound-system
+              publiclyAccessible: false
+              region: us-west-1
+              skipFinalSnapshot: true
+              storageEncrypted: true
+              storageType: gp2
+        username: adminuser
+      patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.resourceConfig.providerConfigName
+          toFieldPath: spec.providerConfigRef.name
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.resourceConfig.tags
+          toFieldPath: spec.forProvider.tags
+          policy:
+            mergeOptions:
+              keepMapValues: true
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.name
+          toFieldPath: status.randomString
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.id
+          toFieldPath: status.bucketArn
+          transforms:
+            - type: string
+              string:
+                fmt: "arn:aws:s3:::%s"

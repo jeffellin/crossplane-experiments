@@ -1,0 +1,10 @@
+apiVersion: ellin.net/v1alpha1
+kind: XMyDataStore
+metadata:
+  name: brigade-jellin
+spec:
+  resourceConfig:
+    providerConfigName: aws-provider-266463974589
+    region: us-east-1
+
+                      
