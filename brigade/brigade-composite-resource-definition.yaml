@@ -1,0 +1,27 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata: 
+  name: xbucketbrigades.ellin.net
+spec:
+  group: ellin.net
+  names:
+    kind: XBucketBrigade
+    plural: xbucketbrigades
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          status:
+            type: object
+            properties: 
+              secondResource:
+                type: string
+          spec:
+            type: object
+            properties:
+              region:
+                type: string

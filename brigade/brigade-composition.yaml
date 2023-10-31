@@ -1,0 +1,37 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: bucket-composition
+spec:
+  compositeTypeRef:
+    apiVersion: ellin.net/v1alpha1
+    kind: XBucketBrigade
+  resources:
+    - name: StorageBucket
+      base:
+        apiVersion: s3.aws.upbound.io/v1beta1
+        kind: Bucket
+        spec:
+          forProvider:
+            region: us-east-1
+          providerConfigRef:
+            name: aws-provider-266463974589
+        patches:
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.name
+          toFieldPath: spec.secondResource
+          policy:
+            fromFieldPath: Required
+    - name: bucket2
+      base:
+        apiVersion: s3.aws.upbound.io/v1beta1
+        kind: Bucket
+        spec:
+          forProvider:
+            region: us-east-1
+          providerConfigRef:
+            name: aws-provider-266463974589
+      patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.secondResource
+          toFieldPath: metadata.labels['secondResource']
