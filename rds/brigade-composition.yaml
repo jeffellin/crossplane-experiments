@@ -3,6 +3,7 @@ kind: Composition
 metadata:
   name: xmydatastore.ellin.net
 spec:
+  writeConnectionSecretsToNamespace: other-namespace
   compositeTypeRef:
     apiVersion: ellin.net/v1alpha1
     kind: XMyDataStore
@@ -12,28 +13,42 @@ spec:
         apiVersion: rds.aws.upbound.io/v1beta1
         kind: Instance
         spec:
-           forProvider:
-              allocatedStorage: 20
-              autoGeneratePassword: true
-              autoMinorVersionUpgrade: true
-              backupRetentionPeriod: 14
-              backupWindow: 09:46-10:16
-              engine: postgres
-              engineVersion: "13.7"
-              instanceClass: db.t3.micro
-              maintenanceWindow: Mon:00:00-Mon:03:00
-              name: example
-              passwordSecretRef:
-                key: password
-                name: example-dbinstance
-                namespace: upbound-system
-              publiclyAccessible: false
-              region: us-west-1
-              skipFinalSnapshot: true
-              storageEncrypted: true
-              storageType: gp2
-        username: adminuser
+          forProvider:
+            allocatedStorage: 20
+            autoGeneratePassword: true
+            autoMinorVersionUpgrade: true
+            backupRetentionPeriod: 14
+            backupWindow: 09:46-10:16
+            engine: postgres
+            engineVersion: "13.7"
+            instanceClass: db.t3.micro
+            maintenanceWindow: Mon:00:00-Mon:03:00
+            name: example
+            passwordSecretRef:
+              key: password
+              name: example-dbinstance
+              namespace: default
+            publiclyAccessible: false
+            region: us-west-1
+            skipFinalSnapshot: true
+            storageEncrypted: true
+            storageType: gp2
+            username: adminuser
+          writeConnectionSecretToRef:
+            namespace: default
+            name: key2
+      connectionDetails:
+       - fromConnectionSecretKey: username
+       - fromConnectionSecretKey: password
+       - name: url
+         fromConnectionSecretKey: endpoint
       patches:
+        - fromFieldPath: "metadata.uid"
+          toFieldPath: "spec.writeConnectionSecretToRef.name"
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-secret1"
         - type: FromCompositeFieldPath
           fromFieldPath: spec.resourceConfig.providerConfigName
           toFieldPath: spec.providerConfigRef.name

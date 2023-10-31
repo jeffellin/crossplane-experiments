@@ -1,0 +1,76 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xsecrettest.example.org
+spec:
+  writeConnectionSecretsToNamespace: other-namespace
+  compositeTypeRef:
+    apiVersion: example.org/v1alpha1
+    kind: XSecretTest
+  resources:
+    - name: key
+      base:
+        apiVersion: iam.aws.upbound.io/v1beta1
+        kind: AccessKey
+        spec:
+          forProvider:
+            userSelector:
+              matchControllerRef: true
+          writeConnectionSecretToRef:
+            namespace: docs
+            name: key1
+      connectionDetails:
+        - fromConnectionSecretKey: username
+        - fromConnectionSecretKey: password
+        - fromConnectionSecretKey: attribute.secret
+        - fromConnectionSecretKey: attribute.ses_smtp_password_v4
+      patches:
+        - fromFieldPath: "metadata.uid"
+          toFieldPath: "spec.writeConnectionSecretToRef.name"
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-secret1"
+    - name: user
+      base:
+        apiVersion: iam.aws.upbound.io/v1beta1
+        kind: User
+        spec:
+          forProvider: {}
+    - name: user2
+      base:
+        apiVersion: iam.aws.upbound.io/v1beta1
+        kind: User
+        metadata:
+          labels:
+            docs.crossplane.io: user
+        spec:
+          forProvider: {}
+    - name: key2
+      base:
+        apiVersion: iam.aws.upbound.io/v1beta1
+        kind: AccessKey
+        spec:
+          forProvider:
+            userSelector:
+              matchLabels:
+                docs.crossplane.io: user
+          writeConnectionSecretToRef:
+            namespace: docs
+            name: key2
+      connectionDetails:
+        - name: key2-user
+          fromConnectionSecretKey: username
+        - name: key2-password
+          fromConnectionSecretKey: password
+        - name: key2-secret
+          fromConnectionSecretKey: attribute.secret
+        - name: key2-smtp
+          fromConnectionSecretKey: attribute.ses_smtp_password_v4
+      patches:
+        - fromFieldPath: "metadata.uid"
+          toFieldPath: "spec.writeConnectionSecretToRef.name"
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-secret2"

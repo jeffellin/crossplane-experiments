@@ -1,0 +1,31 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xsecrettests.example.org
+spec:
+  group: example.org
+  connectionSecretKeys:
+    - username
+    - password
+    - attribute.secret
+    - attribute.ses_smtp_password_v4
+    - key2-user
+    - key2-pass
+    - key2-secret
+    - key2-smtp
+  names:
+    kind: XSecretTest
+    plural: xsecrettests
+  claimNames:
+    kind: SecretTest
+    plural: secrettests
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object

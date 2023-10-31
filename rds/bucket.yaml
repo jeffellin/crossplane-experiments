@@ -1,10 +1,8 @@
 apiVersion: ellin.net/v1alpha1
-kind: XMyDataStore
+kind: MyDataStore
 metadata:
   name: brigade-jellin
 spec:
-  resourceConfig:
-    providerConfigName: aws-provider-266463974589
-    region: us-east-1
-
+  writeConnectionSecretToRef:
+    name: my-access-key-secret
                       

@@ -1,0 +1,8 @@
+apiVersion: example.org/v1alpha1
+kind: SecretTest
+metadata:
+  name: test-secrets
+  namespace: default
+spec:
+  writeConnectionSecretToRef:
+    name: my-access-key-secret
