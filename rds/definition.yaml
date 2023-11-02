@@ -10,7 +10,9 @@ spec:
   connectionSecretKeys:
   - username
   - password
-  - url
+  - host
+  - port
+  - type
   names:
     kind: XMyDataStore
     plural: xmydatastores
@@ -27,3 +29,6 @@ spec:
           properties:
             spec:
               type: object
+              properties:
+                mem:
+                  type: integer

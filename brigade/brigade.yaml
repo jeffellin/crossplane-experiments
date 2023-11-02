@@ -4,6 +4,3 @@ metadata:
   name: brigade
 spec:
   region: bar
-  writeConnectionSecretToRef:
-    name: example-service-secrets-5
-    namespace: default

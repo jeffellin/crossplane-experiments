@@ -32,8 +32,13 @@ spec:
               properties: 
                 secondResource:
                   type: string
+                binding:
+                  type: object
+                  properties:
+                    name:
+                      type: string
             spec:
               type: object
               properties:
-                mem:
-                  type: integer
+                enablePersistence:
+                  type: boolean

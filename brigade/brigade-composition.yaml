@@ -19,19 +19,7 @@ spec:
         patches:
         - type: ToCompositeFieldPath
           fromFieldPath: metadata.name
-          toFieldPath: spec.secondResource
+          toFieldPath: spec.binding
           policy:
             fromFieldPath: Required
-    - name: bucket2
-      base:
-        apiVersion: s3.aws.upbound.io/v1beta1
-        kind: Bucket
-        spec:
-          forProvider:
-            region: us-east-1
-          providerConfigRef:
-            name: aws-provider-266463974589
-      patches:
-        - type: FromCompositeFieldPath
-          fromFieldPath: status.secondResource
-          toFieldPath: metadata.labels['secondResource']
+   

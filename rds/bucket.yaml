@@ -3,6 +3,7 @@ kind: MyDataStore
 metadata:
   name: brigade-jellin
 spec:
+  mem: 100
   writeConnectionSecretToRef:
     name: my-access-key-secret
                       

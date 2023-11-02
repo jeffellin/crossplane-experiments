@@ -25,3 +25,5 @@ spec:
             properties:
               region:
                 type: string
+              binding:
+                type: string

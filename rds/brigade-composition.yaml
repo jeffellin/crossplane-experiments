@@ -13,6 +13,8 @@ spec:
         apiVersion: rds.aws.upbound.io/v1beta1
         kind: Instance
         spec:
+          providerConfigRef:
+            name: aws-provider-266463974589
           forProvider:
             allocatedStorage: 20
             autoGeneratePassword: true
@@ -28,7 +30,7 @@ spec:
               key: password
               name: example-dbinstance
               namespace: default
-            publiclyAccessible: false
+            publiclyAccessible: true
             region: us-west-1
             skipFinalSnapshot: true
             storageEncrypted: true
@@ -40,8 +42,10 @@ spec:
       connectionDetails:
        - fromConnectionSecretKey: username
        - fromConnectionSecretKey: password
-       - name: url
-         fromConnectionSecretKey: endpoint
+       - fromConnectionSecretKey: port
+       - fromConnectionSecretKey: host
+       - name: type
+         value: postgres
       patches:
         - fromFieldPath: "metadata.uid"
           toFieldPath: "spec.writeConnectionSecretToRef.name"
