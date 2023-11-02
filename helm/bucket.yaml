@@ -1,0 +1,9 @@
+apiVersion: ellin.net/v1alpha1
+kind: MyHelmishDataStore
+metadata:
+  name: brigade-jellin
+spec:
+  mem: 100
+  # writeConnectionSecretToRef:
+  #   name: my-access-key-secret-helmish
+                      

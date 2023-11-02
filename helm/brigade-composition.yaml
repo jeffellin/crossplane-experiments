@@ -1,0 +1,88 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xmyhelmishdatastore.ellin.net
+spec:
+  compositeTypeRef:
+    apiVersion: ellin.net/v1alpha1
+    kind: XMyHelmishDataStore
+  resources:
+    - name: helm-store
+      base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        spec:         
+          writeConnectionSecretToRef:
+            namespace: default
+            name: key2
+          connectionDetails:
+            - apiVersion: v1
+              kind: Secret
+              name: brigade-jellin-wgjd2-vqp7k-mysql
+              namespace: default
+              fieldPath: data.mysql-password
+              toConnectionSecretKey: password
+            - apiVersion: v1
+              kind: Service
+              name: brigade-jellin-wgjd2-vqp7k-mysql
+              namespace: default
+              fieldPath: spec.ports[0].port
+              toConnectionSecretKey: port
+            - apiVersion: v1
+              kind: Service
+              name: brigade-jellin-wgjd2-vqp7k-mysql
+              fieldPath: spec.clusterIPs[0]
+              namespace: default
+              toConnectionSecretKey: host
+          forProvider:
+            namespace: default
+            chart:
+              name: mysql
+              repository: oci://registry-1.docker.io/bitnamicharts
+      connectionDetails:
+       - name: type
+         value: mysql
+       - fromConnectionSecretKey: port
+       - fromConnectionSecretKey: host
+       - name: username
+         value: admin
+       - fromConnectionSecretKey: password
+      patches:
+        - fromFieldPath: "metadata.uid"
+          toFieldPath: "spec.writeConnectionSecretToRef.name"
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-secret1"
+        - type: FromCompositeFieldPath
+          fromFieldPath: "metadata.uid"
+          toFieldPath: "metadata.labels['binding']"
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-secret1"
+        - type: ToCompositeFieldPath
+          fromFieldPath: "metadata.labels['binding']"
+          toFieldPath: "status.secondResource"
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.name
+          toFieldPath: metadata.labels['ZoneID']
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-mysql"
+        - fromFieldPath: metadata.labels['ZoneID']
+          toFieldPath: spec.connectionDetails[0].name
+        - fromFieldPath: metadata.labels['ZoneID']
+          toFieldPath: spec.connectionDetails[1].name
+        - fromFieldPath: metadata.labels['ZoneID']
+          toFieldPath: spec.connectionDetails[2].name
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.resourceConfig.providerConfigName
+          toFieldPath: spec.providerConfigRef.name
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.resourceConfig.tags
+          toFieldPath: spec.forProvider.tags
+          policy:
+            mergeOptions:
+              keepMapValues: true

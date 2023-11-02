@@ -1,0 +1,9 @@
+apiVersion: awsblueprints.io/v1alpha1
+kind: XObjectStorage
+metadata:
+  name: standard-object-storage
+spec:
+  resourceConfig:
+    name: me-bucket-jeff-303
+    region: us-east-1
+    providerConfigName: aws-provider-266463974589
