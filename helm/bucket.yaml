@@ -4,6 +4,6 @@ metadata:
   name: brigade-jellin
 spec:
   mem: 100
-  # writeConnectionSecretToRef:
-  #   name: my-access-key-secret-helmish
+  writeConnectionSecretToRef:
+    name: brigade-helmish-jellin
                       

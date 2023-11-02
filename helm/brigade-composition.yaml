@@ -3,6 +3,7 @@ kind: Composition
 metadata:
   name: xmyhelmishdatastore.ellin.net
 spec:
+  writeConnectionSecretsToNamespace: other-namespace
   compositeTypeRef:
     apiVersion: ellin.net/v1alpha1
     kind: XMyHelmishDataStore
@@ -20,7 +21,7 @@ spec:
               kind: Secret
               name: brigade-jellin-wgjd2-vqp7k-mysql
               namespace: default
-              fieldPath: data.mysql-password
+              fieldPath: data.postgres-password
               toConnectionSecretKey: password
             - apiVersion: v1
               kind: Service
@@ -37,15 +38,15 @@ spec:
           forProvider:
             namespace: default
             chart:
-              name: mysql
+              name: postgresql
               repository: oci://registry-1.docker.io/bitnamicharts
       connectionDetails:
        - name: type
-         value: mysql
+         value: postgres
        - fromConnectionSecretKey: port
        - fromConnectionSecretKey: host
        - name: username
-         value: admin
+         value: postgres
        - fromConnectionSecretKey: password
       patches:
         - fromFieldPath: "metadata.uid"
@@ -57,10 +58,6 @@ spec:
         - type: FromCompositeFieldPath
           fromFieldPath: "metadata.uid"
           toFieldPath: "metadata.labels['binding']"
-          transforms:
-            - type: string
-              string:
-                fmt: "%s-secret1"
         - type: ToCompositeFieldPath
           fromFieldPath: "metadata.labels['binding']"
           toFieldPath: "status.secondResource"
@@ -70,7 +67,7 @@ spec:
           transforms:
             - type: string
               string:
-                fmt: "%s-mysql"
+                fmt: "%s-postgresql"
         - fromFieldPath: metadata.labels['ZoneID']
           toFieldPath: spec.connectionDetails[0].name
         - fromFieldPath: metadata.labels['ZoneID']
