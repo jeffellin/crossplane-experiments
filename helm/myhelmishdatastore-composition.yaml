@@ -62,7 +62,8 @@ spec:
          value: postgres
        - fromConnectionSecretKey: password
        - name: database
-         value: petclinic
+         type: FromFieldPath
+         fromFieldPath: spec.forProvider.values.auth.database
       patches:
         # get the values for the chart from the claim
         - fromFieldPath: "spec.enablePersistence"
