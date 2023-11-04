@@ -1,0 +1,11 @@
+apiVersion: ellin.net/v1alpha1
+kind: XMyDataStore
+metadata:
+  name: brigade-jellin
+spec:
+  enablePersistence: True
+  databasename: petclinic
+  writeConnectionSecretToRef:
+    name: brigade-helmish-rds
+    namespace: other-namespace
+

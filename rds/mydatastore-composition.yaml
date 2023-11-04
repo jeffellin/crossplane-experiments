@@ -38,21 +38,54 @@ spec:
             username: adminuser
           writeConnectionSecretToRef:
             namespace: default
-            name: key2
+            name: TBD
       connectionDetails:
        - fromConnectionSecretKey: username
        - fromConnectionSecretKey: password
        - fromConnectionSecretKey: port
        - fromConnectionSecretKey: host
        - name: type
-         value: postgres
+         value: postgresql
+       - name: database
+         value: petclinic
       patches:
+        # get the values for the chart from the claim
+        - fromFieldPath: "spec.enablePersistence"
+          toFieldPath: "spec.forProvider.values.primary.persistence.enabled"
+        - fromFieldPath: "spec.databasename"
+          toFieldPath: "spec.forProvider.values.auth.database"
+       # set the name of the secret for the connection details
         - fromFieldPath: "metadata.uid"
           toFieldPath: "spec.writeConnectionSecretToRef.name"
           transforms:
             - type: string
               string:
                 fmt: "%s-secret1"
+        # copy the secret to the Compisition
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.writeConnectionSecretToRef.name"
+          toFieldPath: "metadata.labels['binding']"
+        # copy the secret to the status.binding.name field
+        # this is needed for the the service binding spec
+        - type: ToCompositeFieldPath
+          fromFieldPath: "metadata.labels['binding']"
+          toFieldPath: "status.binding.name"
+        ## use the name of the chart to get the name
+        ## of the resources created by the chart.
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.name
+          toFieldPath: metadata.labels['chartfullname']
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-postgresql"
+        - fromFieldPath: metadata.labels['chartfullname']
+          toFieldPath: spec.connectionDetails[0].name
+        - fromFieldPath: metadata.labels['chartfullname']
+          toFieldPath: spec.connectionDetails[1].name
+        - fromFieldPath: metadata.labels['chartfullname']
+          toFieldPath: spec.connectionDetails[2].name
+          ## override some values from the claim if set
         - type: FromCompositeFieldPath
           fromFieldPath: spec.resourceConfig.providerConfigName
           toFieldPath: spec.providerConfigRef.name
@@ -62,13 +95,3 @@ spec:
           policy:
             mergeOptions:
               keepMapValues: true
-        - type: ToCompositeFieldPath
-          fromFieldPath: metadata.name
-          toFieldPath: status.randomString
-        - type: ToCompositeFieldPath
-          fromFieldPath: status.atProvider.id
-          toFieldPath: status.bucketArn
-          transforms:
-            - type: string
-              string:
-                fmt: "arn:aws:s3:::%s"
