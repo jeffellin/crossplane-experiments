@@ -1,0 +1,21 @@
+---
+apiVersion: servicebinding.io/v1beta1
+kind: ServiceBinding
+metadata:
+  name: spring-petclinic-db
+  annotations:
+    kapp.k14s.io/change-group: binding
+    kapp.k14s.io/change-rule.service: "upsert after upserting service"
+    kapp.k14s.io/change-rule.service-delete: "delete before deleting service"
+    kapp.k14s.io/change-rule.workload: "upsert before upserting workload"
+    kapp.k14s.io/change-rule.workload-delete: "delete after deleting workload"
+spec:
+  # direct Secret reference is used for compatibility, but not recommended for dynamically provisioned services
+  service:
+    apiVersion: v1
+    kind: Secret
+    name: 3f04b345-d53d-49cc-bc0c-258073ffe3a0
+  workload:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: spring-petclinic

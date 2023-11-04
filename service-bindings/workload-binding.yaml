@@ -1,0 +1,15 @@
+apiVersion: servicebinding.io/v1beta1
+kind: ServiceBinding
+metadata:
+  name: spring-petclinic-postgresql
+  namespace: other-namespace
+spec:
+  service:
+    apiVersion: ellin.net/v1alpha1
+    kind: XMyHelmishDataStore
+    name:  brigade-jellin-direct
+  workload:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: spring-petclinic
+    

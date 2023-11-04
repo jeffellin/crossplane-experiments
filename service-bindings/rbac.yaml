@@ -1,0 +1,23 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: awesome-service-bindings
+  labels:
+    servicebinding.io/controller: "true" # matches the aggregation rule selector
+rules:
+- apiGroups:
+  - ellin.net
+  resources:
+  - xmyhelmishdatastores
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: build-robot-secret
+  annotations:
+    kubernetes.io/service-account.name: servicebinding-controller-manager
+type: kubernetes.io/service-account-token

@@ -13,6 +13,7 @@ spec:
   - host
   - port
   - type
+  - database
   names:
     kind: XMyHelmishDataStore
     plural: xmyhelmishdatastores
@@ -40,5 +41,7 @@ spec:
             spec:
               type: object
               properties:
+                databasename:
+                  type: string
                 enablePersistence:
                   type: boolean
